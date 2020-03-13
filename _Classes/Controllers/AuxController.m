@@ -1,4 +1,9 @@
 classdef AuxController < NIDAQController
+    % This controller works in tandem with the StepperController to provide full control of a stepper motor. Whereas the StepperController is in charge of stepping the motor, this controls everything else, ie direction and microstep level
+
+    % Written 02Mar2020 KS
+    % Updated
+
 	properties
 		dir_idx
 		microstep_idx
@@ -10,15 +15,15 @@ classdef AuxController < NIDAQController
 
 	methods
 		function obj = AuxController(motor)
-			obj = obj@NIDAQController();
-			obj.motor = motor;
+			obj.motor = motor; % Aux controller needs to know which motor to work with, this is passing in the driver
 
-			obj.dir_idx = obj.addDigitalOutput(obj.motor.getDirLine());
+			obj.dir_idx = obj.addDigitalOutput(obj.motor.getDirLine()); % Direction line
+
 			for l = 1:3
-				obj.microstep_idx(l) = obj.addDigitalOutput(obj.motor.getMicrostepLine(l));
+				obj.microstep_idx(l) = obj.addDigitalOutput(obj.motor.getMicrostepLine(l)); % Microstep lines
 			end
 			obj.output = zeros(1, 4);
-			obj.setMicrostep('Sixteenth')
+			obj.setMicrostep('Sixteenth') % Setting our "default" micrestop values
 		end
 
 		function setMicrostep(obj, microstep_amount)

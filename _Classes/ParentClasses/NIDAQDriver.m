@@ -1,4 +1,8 @@
 classdef NIDAQDriver < handle
+    % Parent class for creating drivers. Drivers define the inputs and outputs of the physical objects for easy interfacing.
+
+    % Written 02Mar2020 KS
+    % Updated
 	properties
         state
 	end

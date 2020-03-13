@@ -1,4 +1,9 @@
 classdef LEDController < NIDAQController
+% For controlling an LED (or really any simple thing that just has an on and off state)
+
+% Written 05Feb2020 KS
+% Updated
+
 	properties
 		led % LED driver
 		control_idx

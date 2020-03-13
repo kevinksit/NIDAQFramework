@@ -1,4 +1,9 @@
 classdef StepperController < NIDAQController
+    % This class is used to control the stepper motors. It is a huge controller that also requires the creation of AuxControllers to help split the work.
+
+    % Written 05Mar2020 KS
+    % Updated
+
 	properties (Constant = true)
 		MAX_SPEED = 400;
         STEPS_PER_REV = 200;
@@ -20,7 +25,7 @@ classdef StepperController < NIDAQController
             for m = obj.motors
                 obj.step_idx(ct) = obj.addDigitalOutput(m.getStepLine());
                 if ct == 1
-                    obj.aux_controller = AuxController(m);
+                    obj.aux_controller = AuxController(m); % to keep it simple, auxiliary controls are relegated to a second controller
                 else
                     obj.aux_controller(ct) = AuxController(m);
                 end
@@ -28,24 +33,20 @@ classdef StepperController < NIDAQController
             end
 
         	% Set up time
-        	obj.addClock(0);
+        	obj.addClock(0); % because of the necessity of precise timing, this controller requires the addition of a clock
         end
 
-        % I think we should rewrite this in the future, it's messy af
         function output = queue(obj, speed, input_type, value)
+            % For queueing data into the DAQ for controlling the motors... Can either put values in in "steps" or "seconds", generally recommend using "seconds"...
+
             if strcmp(input_type, 'steps') && (length(speed) ~= length(obj.motors) || length(value) ~= length(obj.motors))
 				%error('Input the same number of speed/values as motors');
                 value = repmat(value, 1, length(obj.motors));
             end
             
-            % when you're dealing with 0 speed, you have issues here...
-            % again, what's the purpose of this scaling, and how can we implement it better?
-
-            % DO ALL YOUR CALCULATIONS PRIOR
-
             obj.checkSpeed(max(speed))
 
-            switch input_type
+            switch input_type % Calculating the other parameter based on what we got
             case 'steps'
                 for n = 1:length(obj.motors)
                     n_steps(n) = (value(n) .* speed(n));
@@ -54,14 +55,14 @@ classdef StepperController < NIDAQController
             case 'seconds'
                 duration = value;
                 for n = 1:length(obj.motors)
-                    n_steps(n) = round(obj.getSteps(duration, speed(n)));% * obj.aux_controller(n).getMicrostepScale());
-                end
+                    n_steps(n) = round(obj.getSteps(duration, speed(n))); 
             end
 
             % When steps are 0, then time is 0, get rid of these errors
             duration(isnan(duration)) = 0;
             duration = max(duration);
 
+            % Generate output vector
 	        n_samples = round(duration .* obj.session.Rate); % Getting the length of the output vector
 	        output = zeros(n_samples, length(obj.motors));
 	        for n = 1:length(obj.motors)
@@ -70,14 +71,18 @@ classdef StepperController < NIDAQController
 	        	drive_vector(step_vec) = true;
 	        	output(:, n) = drive_vector;
 	        end
+
+            % Send to the DAQ
 	        obj.sendDataToDAQ(output);
 	    end
 
 	    function wait(obj, duration)
+            % Just pausing if needed
 	    	obj.queue(zeros(1, length(obj.motors)), 'seconds', duration);
 	    end
 
 	    function out = rotate(obj, motor_num, angle, speed)
+            % This is a manually controlled rotation of the motor of a certain degree
 	    	if nargin < 4 || isempty(speed)
 	    		speed = 3;
 	    	end
@@ -88,13 +93,8 @@ classdef StepperController < NIDAQController
 	    	out = obj.queue(speeds, 'steps', steps);
 	    end
         
-        function test(obj, speed)
-            % For quick testing
-            obj.queue(repmat(speed, 1, length(obj.motors)), 'steps', repmat(200, 1, length(obj.motors))); % should be 1 rev
-            obj.drive();
-        end
-
         function changeDirection(obj, motor_num, direction)
+            % Calling on the aux controller to change the motor direction
         	if nargin < 2 || isempty(direction)
         		direction = questdlg('Choose your direction: ', 'Direction', 'cw', 'ccw', 'cw');
         	end
@@ -107,6 +107,7 @@ classdef StepperController < NIDAQController
         end
 
         function changeMicrostep(obj, motor_num, microstep)
+            % Calling on the aux cotnroller to change the microstep value.
         	if nargin  < 3 || isempty(motor_num)
         		motor_num = 1;
         	end
@@ -115,6 +116,7 @@ classdef StepperController < NIDAQController
         end
 
         function step(obj, motor_num, dir, slow_flag)
+            % Single step (or really a couple quick steps)
             if slow_flag 
                 speed = 5;
             else
