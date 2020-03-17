@@ -43,7 +43,7 @@ classdef NIDAQController < handle
         end
 
         function idx = addAnalogOutput(obj, channel)
-            [~, idx] = obj.session.addAnalogOutputChannel('Dev', channel, 'Voltage');
+            [~, idx] = obj.session.addAnalogOutputChannel('Dev1', channel, 'Voltage');
         end
         
         function report(obj)

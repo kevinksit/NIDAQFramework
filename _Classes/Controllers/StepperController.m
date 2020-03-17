@@ -56,6 +56,7 @@ classdef StepperController < NIDAQController
                 duration = value;
                 for n = 1:length(obj.motors)
                     n_steps(n) = round(obj.getSteps(duration, speed(n))); 
+                end
             end
 
             % When steps are 0, then time is 0, get rid of these errors
