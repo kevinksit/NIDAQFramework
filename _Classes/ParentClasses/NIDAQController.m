@@ -39,8 +39,11 @@ classdef NIDAQController < handle
         end
 
         function idx = addDigitalOutput(obj, channel)
-            % Currently only support for digital I/O
         	[~, idx] = obj.session.addDigitalChannel('Dev1', channel, 'OutputOnly');
+        end
+
+        function idx = addAnalogOutput(obj, channel)
+            [~, idx] = obj.session.addAnalogOutputChannel('Dev', channel, 'Voltage');
         end
         
         function report(obj)
@@ -48,7 +51,7 @@ classdef NIDAQController < handle
         	disp(obj.session)
         end
 
-        function digitalWrite(obj, line, val)
+        function write(obj, line, val)
             % Simple write onto the line that you designate. The two step process is because you might have multiple ports on the same session, and you need to write to all ports simulatenously
         	obj.output(line) = val;
         	obj.session.outputSingleScan(obj.output);

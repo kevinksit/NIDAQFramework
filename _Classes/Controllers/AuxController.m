@@ -36,25 +36,25 @@ classdef AuxController < NIDAQController
             end
             switch microstep_amount
             case 'Full'
-            	obj.digitalWrite(obj.microstep_idx(1), 0);
-            	obj.digitalWrite(obj.microstep_idx(2), 0);
-            	obj.digitalWrite(obj.microstep_idx(3), 0);
+            	obj.write(obj.microstep_idx(1), 0);
+            	obj.write(obj.microstep_idx(2), 0);
+            	obj.write(obj.microstep_idx(3), 0);
             case 'Half'
-            	obj.digitalWrite(obj.microstep_idx(1), 1);
-            	obj.digitalWrite(obj.microstep_idx(2), 0);
-            	obj.digitalWrite(obj.microstep_idx(3), 0);
+            	obj.write(obj.microstep_idx(1), 1);
+            	obj.write(obj.microstep_idx(2), 0);
+            	obj.write(obj.microstep_idx(3), 0);
             case 'Quarter'
-            	obj.digitalWrite(obj.microstep_idx(1), 0);
-            	obj.digitalWrite(obj.microstep_idx(2), 1);
-            	obj.digitalWrite(obj.microstep_idx(3), 0);
+            	obj.write(obj.microstep_idx(1), 0);
+            	obj.write(obj.microstep_idx(2), 1);
+            	obj.write(obj.microstep_idx(3), 0);
             case 'Eighth'
-            	obj.digitalWrite(obj.microstep_idx(1), 1);
-            	obj.digitalWrite(obj.microstep_idx(2), 1);
-            	obj.digitalWrite(obj.microstep_idx(3), 0);
+            	obj.write(obj.microstep_idx(1), 1);
+            	obj.write(obj.microstep_idx(2), 1);
+            	obj.write(obj.microstep_idx(3), 0);
             case 'Sixteenth'
-            	obj.digitalWrite(obj.microstep_idx(1), 1);
-            	obj.digitalWrite(obj.microstep_idx(2), 1);
-            	obj.digitalWrite(obj.microstep_idx(3), 1);
+            	obj.write(obj.microstep_idx(1), 1);
+            	obj.write(obj.microstep_idx(2), 1);
+            	obj.write(obj.microstep_idx(3), 1);
             otherwise
                 error('Wrong value, choices: Full, Half, Quarter, Eighth, Sixteenth')
             end
@@ -65,9 +65,9 @@ classdef AuxController < NIDAQController
         function setDirection(obj, direction)
         	switch direction
         	case 'cw'
-        		obj.digitalWrite(obj.dir_idx, 0);
+        		obj.write(obj.dir_idx, 0);
         	case 'ccw'
-        		obj.digitalWrite(obj.dir_idx, 1);
+        		obj.write(obj.dir_idx, 1);
         	end
         end
 

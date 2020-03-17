@@ -16,11 +16,11 @@ classdef LEDController < NIDAQController
 		end
 
 		function on(obj)
-			obj.digitalWrite(obj.control_idx(), 1);
+			obj.write(obj.control_idx(), 1);
 		end
 
 		function off(obj)
-			obj.digitalWrite(obj.control_idx(), 0);
+			obj.write(obj.control_idx(), 0);
 		end
 	end
 end
