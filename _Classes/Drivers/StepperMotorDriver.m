@@ -1,6 +1,5 @@
 classdef StepperMotorDriver < NIDAQDriver
 	properties (Constant = true)
-		MAX_SPEED = 400;
 		STEPS_PER_REV = 200;
 	end
 

@@ -140,14 +140,14 @@ classdef StepperController < NIDAQController
             end
         end
 
-        function duration = getDuration(obj, moton_num, n_steps, speed) 
+        function duration = getDuration(obj, motor_num, n_steps, speed) 
             % Convert from n_steps and speed to time (in seconds)
-            duration = (n_steps/(obj.motor(motor_num).getStepsPerRev() * obj.aux_controller(1).getMicrostepScale())) * (60/speed); % to account for microstepping
+            duration = (n_steps/(obj.motors(motor_num).getStepsPerRev() * obj.aux_controller(1).getMicrostepScale())) * (60/speed); % to account for microstepping
         end
 
         function n_steps = getSteps(obj, motor_num, duration, speed)
             % Convert from speed and duration to number steps
-            n_steps = (speed./60) .* duration .* (obj.motor(motor_num).getStepsPerRev() * obj.aux_controller(1).getMicrostepScale());
+            n_steps = (speed./60) .* duration .* (obj.motors(motor_num).getStepsPerRev() * obj.aux_controller(1).getMicrostepScale());
         end
     end
 end
