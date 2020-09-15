@@ -2,11 +2,10 @@ classdef StepperController < NIDAQController
     % This class is used to control the stepper motors. It is a huge controller that also requires the creation of AuxControllers to help split the work.
 
     % Written 05Mar2020 KS
-    % Updated
+    % Updated 14Sep2020 KS | Moved the constants to the driver because they can be different for each motor...
 
-	properties (Constant = true)
-		MAX_SPEED = 400;
-        STEPS_PER_REV = 200;
+    properties
+        MAX_SPEED = 400;
     end
 
     properties
@@ -50,12 +49,12 @@ classdef StepperController < NIDAQController
             case 'steps'
                 for n = 1:length(obj.motors)
                     n_steps(n) = (value(n) .* speed(n));
-                    duration(n) = obj.getDuration(n_steps(n), speed(n));
+                    duration(n) = obj.getDuration(n, n_steps(n), speed(n));
                 end
             case 'seconds'
                 duration = value;
                 for n = 1:length(obj.motors)
-                    n_steps(n) = round(obj.getSteps(duration, speed(n))); 
+                    n_steps(n) = round(obj.getSteps(n, duration, speed(n))); 
                 end
             end
 
@@ -90,7 +89,7 @@ classdef StepperController < NIDAQController
 	    	speeds = zeros(1, length(obj.motors));
 	    	steps = speeds;
 	    	speeds(motor_num) = speed;
-	    	steps(motor_num) = round((angle/360) *  obj.STEPS_PER_REV) * obj.aux_controller(motor_num).getMicrostepScale();
+	    	steps(motor_num) = round((angle/360) *  obj.motors(motor_num).getStepsPerRev()) * obj.aux_controller(motor_num).getMicrostepScale();
 	    	out = obj.queue(speeds, 'steps', steps);
 	    end
         
@@ -141,14 +140,14 @@ classdef StepperController < NIDAQController
             end
         end
 
-        function duration = getDuration(obj, n_steps, speed) 
+        function duration = getDuration(obj, moton_num, n_steps, speed) 
             % Convert from n_steps and speed to time (in seconds)
-            duration = (n_steps/(obj.STEPS_PER_REV * obj.aux_controller(1).getMicrostepScale())) * (60/speed); % to account for microstepping
+            duration = (n_steps/(obj.motor(motor_num).getStepsPerRev() * obj.aux_controller(1).getMicrostepScale())) * (60/speed); % to account for microstepping
         end
 
-        function n_steps = getSteps(obj, duration, speed)
+        function n_steps = getSteps(obj, motor_num, duration, speed)
             % Convert from speed and duration to number steps
-            n_steps = (speed./60) .* duration .* (obj.STEPS_PER_REV * obj.aux_controller(1).getMicrostepScale());
+            n_steps = (speed./60) .* duration .* (obj.motor(motor_num).getStepsPerRev() * obj.aux_controller(1).getMicrostepScale());
         end
     end
 end

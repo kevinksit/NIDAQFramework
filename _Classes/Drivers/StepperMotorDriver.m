@@ -1,4 +1,9 @@
 classdef StepperMotorDriver < NIDAQDriver
+	properties (Constant = true)
+		MAX_SPEED = 400;
+		STEPS_PER_REV = 200;
+	end
+
 	properties
 		step_line
 		dir_line
@@ -30,6 +35,10 @@ classdef StepperMotorDriver < NIDAQDriver
 			else
 				out = obj.microstep_lines{n};
 			end
+		end
+
+		function out = getStepsPerRev(obj)
+			out = obj.STEPS_PER_REV;
 		end
 	end
 end
