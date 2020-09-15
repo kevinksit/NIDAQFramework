@@ -1,4 +1,6 @@
 classdef StepperMotorDriver < NIDAQDriver
+	% Updated 15Sep2020 KS | Added STEPS_PER_REV from the StepperController, because it fits here better...
+	
 	properties (Constant = true)
 		STEPS_PER_REV = 200;
 	end
