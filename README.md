@@ -18,3 +18,5 @@ When only using digital I/O and requiring precise timing, there needs to be an a
 
 ## Usage
 When you have a physical object you want to connect to the DAQ, first identify its inputs and the nature of those inputs. Appropriately connect those to your DAQ, and create drivers (subclassing the NIDAQDriver class) to interface with them. Then create Controllers (subclassing NIDAQControllers) in order to define the logic that controls them. For a simple example, see the LEDDriver and LEDController. For a more complex example, see the Stepper stuff. In general, when designing a controller, you should have the driver to that controller be passed in as an input argument to the class constructor.
+
+Developed by KS
